@@ -66,3 +66,4 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 
 > *sum8=100;   %Output pattern error corresponding to the optimized complex-valued mask*
 
+
