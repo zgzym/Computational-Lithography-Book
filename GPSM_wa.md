@@ -11,7 +11,7 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 
 ## 1. Matlab版代码及说明
 
-#1 *function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);*
+> *function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);*
 
 函数一共有16个参数，每个参数的含义如下：
 
@@ -46,3 +46,23 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 *epsilon*：输出版图的最大可容忍误差；
 
 *maxloop*：最大迭代次数；
+> *dr=zeros(N,N);   %Gradient of the cost function corresponding to \phi*
+
+> *da=zeros(N,N);   %Gradient of the cost function corresponding to \theta*
+
+> *dr_D=zeros(N,N);   %Gradient of the discretization penalty corresponding to \phi*
+
+> *da_D=zeros(N,N);   %Gradient of the discretization penalty corresponding to \theta*
+
+> *dr_WA=zeros(N,N);   %Gradient of the wavelet penalty corresponding to \phi*
+
+> *da_WA=zeros(N,N);   %Gradient of the wavelet penalty corresponding to \theta*
+
+> *convergence=zeros(maxloop,1);   %Output pattern error in each iteration*
+
+> *count=0;   %Index of iteration number*
+
+> *sum6=100;   %Output pattern error corresponding to the optimized pole-level mask*
+
+> *sum8=100;   %Output pattern error corresponding to the optimized complex-valued mask*
+
