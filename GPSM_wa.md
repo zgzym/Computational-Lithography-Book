@@ -12,7 +12,7 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 若所有区域的权重均为1，则为全局小波罚函数。
 
 ## 1. Matlab版代码及说明
-<table><tr><td color=red>function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
+<table><tr><td>function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
 
 函数一共有16个参数，每个参数的含义如下：
 
@@ -47,30 +47,32 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 *epsilon*：输出版图的最大可容忍误差；
 
 *maxloop*：最大迭代次数；
-> dr=zeros(N,N);   %Gradient of the cost function corresponding to \phi
+<table><tr><td>
+dr=zeros(N,N);   %Gradient of the cost function corresponding to \phi
 
-> da=zeros(N,N);   %Gradient of the cost function corresponding to \theta
+da=zeros(N,N);   %Gradient of the cost function corresponding to \theta
 
-> dr_D=zeros(N,N);   %Gradient of the discretization penalty corresponding to \phi
+dr_D=zeros(N,N);   %Gradient of the discretization penalty corresponding to \phi
 
-> da_D=zeros(N,N);   %Gradient of the discretization penalty corresponding to \theta
+da_D=zeros(N,N);   %Gradient of the discretization penalty corresponding to \theta
 
-> dr_WA=zeros(N,N);   %Gradient of the wavelet penalty corresponding to \phi
+dr_WA=zeros(N,N);   %Gradient of the wavelet penalty corresponding to \phi
 
-> da_WA=zeros(N,N);   %Gradient of the wavelet penalty corresponding to \theta
+da_WA=zeros(N,N);   %Gradient of the wavelet penalty corresponding to \theta
 
-> convergence=zeros(maxloop,1);   %Output pattern error in each iteration
+convergence=zeros(maxloop,1);   %Output pattern error in each iteration
 
-> count=0;   %Index of iteration number
+count=0;   %Index of iteration number
 
-> sum6=100;   %Output pattern error corresponding to the optimized pole-level mask
+sum6=100;   %Output pattern error corresponding to the optimized pole-level mask
 
-> sum8=100;   %Output pattern error corresponding to the optimized complex-valued mask
+sum8=100;   %Output pattern error corresponding to the optimized complex-valued mask
+</td></tr></table>
 
 以上为基本变量的定义，包括梯度，每次迭代后的误差，迭代次数和输出版图误差
-
-> h = fspecial('gaussian',11, 14);
-
+<table><tr><td>
+h = fspecial('gaussian',11, 14);
+</td></tr></table>
 h: 振幅冲激响应函数，fspecial('gaussian', hsize, sigma)返回大小为hsize且标准偏差为sigma（正）的旋转对称高斯低通滤波器。
 
 hsize可以是一个向量，指定h中的行数和列数，也可以是一个标量，在这种情况下，h是一个方阵。
