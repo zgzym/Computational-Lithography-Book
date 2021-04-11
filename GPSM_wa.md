@@ -66,4 +66,25 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 
 > *sum8=100;   %Output pattern error corresponding to the optimized complex-valued mask*
 
+以上为基本变量的定义，包括梯度，每次迭代后的误差，迭代次数和输出版图误差
 
+> h = fspecial('gaussian',11, 14);
+
+h: 振幅冲激响应函数，fspecial('gaussian', hsize, sigma)返回大小为hsize且标准偏差为sigma（正）的旋转对称高斯低通滤波器。
+
+hsize可以是一个向量，指定h中的行数和列数，也可以是一个标量，在这种情况下，h是一个方阵。
+
+因此h为11×11的标准差为14的高斯型低通滤波器矩阵。
+
+h的物理意义为光学系统对于输入的Mask的响应，通过Mask与h做卷积，即可得到光学系统的输出。
+
+> for ii = 1:11
+>     for j = 1:11
+>         h1((ii-1)*11+j) = h(ii, j);
+>     end
+> end
+> for ii = 1:11
+>     for j=1:11
+>         g(ii,j)=h1((11-ii)*11+(12-j));
+>     end
+> end
