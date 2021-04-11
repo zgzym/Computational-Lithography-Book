@@ -12,7 +12,7 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 若所有区域的权重均为1，则为全局小波罚函数。
 
 ## 1. Matlab版代码及说明
-<table><tr><td bgcolor=red>function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
+<table><tr><td color=red>function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
 
 函数一共有16个参数，每个参数的含义如下：
 
