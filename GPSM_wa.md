@@ -14,6 +14,10 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 ## 1. Matlab版代码及说明
 <table><tr><td> function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
 
+```
+fd
+```
+
 函数一共有16个参数，每个参数的含义如下：
 
 *N*： Mask的维度；
@@ -132,6 +136,7 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
  
  振幅表达式如下：
  ![2fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/2.png)
+
 计算mask pattern的实部，虚部和振幅
  
  <table><tr><td>  
@@ -231,8 +236,9 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
 </td></tr></table>
 
 sigmoid函数表达式如下：
- ![fig3](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/3.png)
  
+<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/3.png" width="40%" align=center/><br/>
+
 接下来计算cost function的梯度，首先计算几个中间值：
 
 <table><tr><td>
@@ -240,31 +246,36 @@ sigmoid函数表达式如下：
 </td></tr></table>
 
 mid3的表达式为：
- ![fig4](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/4.png)
+
+<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/4.png" width="40%" align=center/><br/>
 
 其中，mid1r为HmR，即m的实部与h的卷积，1./mid1mo即为T(m)，T(m)表达式为：
- ![fig5](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/5.png)
+ 
+<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/5.png" width="40%" align=center/><br/>
 
 <table><tr><td>
     mid5=imfilter(mid3,g);   
 </td></tr></table>
 
 mid5为mid3与g的卷积，g为h的转置，因此mid5的表达式为：
-![fig6](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/6.png)
+
+<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/6.png" width="40%" align=center/><br/>
 
 <table><tr><td>
     mid7=( pz-z ).*z.*(1-z).*mid1i.*(1./mid1mo);   
 </td></tr></table>
 
 mid7的表达式为：
-![fig7](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/7.png)
+
+<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/7.png" width="40%" align=center/><br/>
 
 <table><tr><td>
     mid9=imfilter(mid7,g);
 </td></tr></table>
 
 mid9为mid7与g的卷积，其表达式为：
-![fig8](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/8.png)
+
+<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/8.png" width="40%" align=center/><br/>
 
     %%%%%%Gradient of the discretization penalty corresponding to \phi%%%%%%  
     
