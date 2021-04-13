@@ -119,15 +119,17 @@ cun=1000; % 初始误差
 下面的while循环是算法主体部分：
 
 <table><tr><td>
-while (sum6>epsilon) & (count<maxloop)  
-                                                                        
-   count=count+1; 
+while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsilon并且循环次数小于最大循环测试maxloop时继续循环
+                                                                        \
+   count=count+1;  // 循环次数+1
     
-   rr=rr-s_phi*dr;   %Update
+   rr=rr-s_phi*dr;   // 更新振幅rr，s_phi为上次循环后计算的振幅的梯度，dr为步长
     
-   ra=ra-s_theta*da;   %Update
+   ra=ra-s_theta*da;   // 更新相位ra，s_theta为上次循环后计算的相位的梯度，da为步长
     
-   m=0.5.*(1+cos(rr)).*exp(i.*ra);   %Calculate continuous mask pattern
+   m=0.5.*(1+cos(rr)).*exp(i.*ra);   // 将mask的振幅的限制条件（0-1）用cos函数替代
+</td></tr></table>
+
     
    mr=real(m);   %Real part of continuous mask pattern
    
