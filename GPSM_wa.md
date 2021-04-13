@@ -129,7 +129,8 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
     
    m=0.5.*(1+cos(rr)).*exp(i.*ra);   // 将mask的振幅的限制条件（0-1）用cos函数替代
 </td></tr></table>
-![no](/images/2.png)
+ 
+ ![2fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/2.png)
 
     
    mr=real(m);   %Real part of continuous mask pattern
