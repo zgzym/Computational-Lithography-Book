@@ -119,25 +119,25 @@ cun=1000; % 初始误差
 下面的while循环是算法主体部分：
 
 <table><tr><td>
-while (sum6>epsilon) & (count<maxloop)
- 
-    count=count+1; 
+while (sum6>epsilon) & (count<maxloop)  
+                                                                        
+   count=count+1; 
     
-    rr=rr-s_phi*dr;   %Update
+   rr=rr-s_phi*dr;   %Update
     
-    ra=ra-s_theta*da;   %Update
+   ra=ra-s_theta*da;   %Update
     
-    m=0.5.*(1+cos(rr)).*exp(i.*ra);   %Calculate continuous mask pattern
+   m=0.5.*(1+cos(rr)).*exp(i.*ra);   %Calculate continuous mask pattern
     
-    mr=real(m);   %Real part of continuous mask pattern
+   mr=real(m);   %Real part of continuous mask pattern
+   
+   mi=imag(m);   %Imaginary part of continuous mask pattern
     
-    mi=imag(m);   %Imaginary part of continuous mask pattern
+   mmo=abs(m);   %Amplitude pattern of continuous mask pattern
     
-    mmo=abs(m);   %Amplitude pattern of continuous mask pattern
+   %%%%%%Quantize the complex-valued mask to pole-level mask%%%%%
     
-    %%%%%%Quantize the complex-valued mask to pole-level mask%%%%%
-    
-    if (phase_n==4)   %Four-phase PSM
+   if (phase_n==4)   %Four-phase PSM
     
         viccone=mmo>t_m;   %Transparent area on the mask
         
