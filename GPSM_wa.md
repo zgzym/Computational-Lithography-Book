@@ -103,7 +103,7 @@ for ii = 1:11
 </td></tr></table>
 
 *h1: h的一维向量展开；
-*g: 将h旋转180度
+*g: 将h旋转180度，g为h的转置矩阵
 
 <table><tr><td>
 rr = pi*4/5*(pz==0) + pi/5*(pz==1);
@@ -130,20 +130,26 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
    m=0.5.*(1+cos(rr)).*exp(i.*ra);   // 将mask的振幅的限制条件（0-1）用cos函数替代
 </td></tr></table>
  
+ 振幅表达式如下：
  ![2fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/2.png)
-
-    
+计算mask pattern的实部，虚部和振幅
+ 
+ <table><tr><td>  
    mr=real(m);   %Real part of continuous mask pattern
    
    mi=imag(m);   %Imaginary part of continuous mask pattern
     
    mmo=abs(m);   %Amplitude pattern of continuous mask pattern
-    
+ </td></tr></table>
+ 
+ 根据mask pattern的实部，虚部的正负判断相位，根据振幅是否超过阈值t_m判断为透明区域或非透明区域
+ 
+ <table><tr><td>  
    %%%%%%Quantize the complex-valued mask to pole-level mask%%%%%
     
    if (phase_n==4)   %Four-phase PSM
     
-        viccone=mmo>t_m;   %Transparent area on the mask
+        viccone=mmo>t_m;   %Transparent area on the mask，幅度大于t_m为1
         
         vicctwo=(mr>=0)&(mi>=0);   %Area with phase of pi/4
         
@@ -161,7 +167,7 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
         
         viccfive=exp(i*pi*7/4)*viccfive;
         
-        viccsix=vicctwo+viccthree+viccfour+viccfive;   %Phase pattern of mask pattern
+        viccsix=vicctwo+viccthree+viccfour+viccfive;   % MASK的相位版图
         
         viccin=viccone.*viccsix;   %Pole-level mask pattern
         
@@ -180,11 +186,23 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
        viccin=viccone.*viccfour;   %Pole-level mask pattern
        
     end
-    
-     viccout=imfilter(viccin,h);
-     
-    viccbin=abs(viccout)>t_r;   %Output pattern of pole-level mask
+  </td></tr></table>
+  
+将pole-level mask pattern 与冲激响应函数h做卷积
+  
+<table><tr><td> 
+    viccout=imfilter(viccin,h); 
+</td></tr></table>
+  
+根据输出版图的振幅（绝对值）与sigmoid函数阈值t_r（显影阈值）比较，将其转为输出版图
 
+<table><tr><td> 
+    viccbin=abs(viccout)>t_r;   %Output pattern of pole-level mask
+</td></tr></table>
+
+计算输出版图viccbin与目标版图pz之间的误差sum6
+
+<table><tr><td>
     sum6=sum(sum(abs(pz-viccbin)));  
       
     convergence(count,1)=sum6;
@@ -196,25 +214,58 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
     end
     
     disp(cun);
-   
+</td></tr></table>   
+
+将连续型mask m与冲激响应函数h做卷积：
+
+<table><tr><td>
     mid1=imfilter(m,h);   %Convolution between continuous mask and low-pass filter
     
-    mid1mo=abs(mid1);   %Convolution between continuous mask amplitude and low-pass filter
+    mid1mo=abs(mid1);   %卷积后的绝对值，振幅
     
     mid1r=imfilter(mr,h);   %Convolution between real part of continuous mask amplitude and low-pass filter 
     
     mid1i=imfilter(mi,h);   %Convolution between imaginary part of continuous mask amplitude and low-pass filter
     
-    z=1./ (  1+exp(-1*a*(mid1mo)+a*t_r)  ); 
-    
+    z=1./ (  1+exp(-1*a*(mid1mo)+a*t_r)  ); % sigmoid函数
+</td></tr></table>
+
+sigmoid函数表达式如下：
+ ![fig3](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/3.png)
+ 
+接下来计算cost function的梯度，首先计算几个中间值：
+
+<table><tr><td>
     mid3=( pz-z ).*z.*(1-z).*mid1r.*(1./mid1mo);   
-    
+</td></tr></table>
+
+mid3的表达式为：
+ ![fig4](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/4.png)
+
+其中，mid1r为HmR，即m的实部与h的卷积，1./mid1mo即为T(m)，T(m)表达式为：
+ ![fig5](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/5.png)
+
+<table><tr><td>
     mid5=imfilter(mid3,g);   
-    
+</td></tr></table>
+
+mid5为mid3与g的卷积，g为h的转置，因此mid5的表达式为：
+![fig6](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/6.png)
+
+<table><tr><td>
     mid7=( pz-z ).*z.*(1-z).*mid1i.*(1./mid1mo);   
-    
+</td></tr></table>
+
+mid7的表达式为：
+![fig7](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/7.png)
+
+<table><tr><td>
     mid9=imfilter(mid7,g);
-    
+</td></tr></table>
+
+mid9为mid7与g的卷积，其表达式为：
+![fig8](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/8.png)
+
     %%%%%%Gradient of the discretization penalty corresponding to \phi%%%%%%  
     
     dr_D=(-0.5)*sin(rr).*(1+cos(rr));
