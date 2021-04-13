@@ -12,11 +12,9 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 若所有区域的权重均为1，则为全局小波罚函数。
 
 ## 1. Matlab版代码及说明
+
 <table><tr><td> function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
 
-```
-fd
-```
 
 函数一共有16个参数，每个参数的含义如下：
 
@@ -277,6 +275,9 @@ mid9为mid7与g的卷积，其表达式为：
 
 <img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/8.png" width="40%" align=center/><br/>
 
+计算离散罚函数的梯度：
+
+<table><tr><td>
     %%%%%%Gradient of the discretization penalty corresponding to \phi%%%%%%  
     
     dr_D=(-0.5)*sin(rr).*(1+cos(rr));
@@ -292,7 +293,11 @@ mid9为mid7与g的卷积，其表达式为：
         da_D=4.*( sin(2.*ra-pi/2)+1 ).*cos(2.*ra-pi/2);
     
     end
+</td></tr></table>   
 
+计算小波罚函数的梯度：
+
+<table><tr><td>
     %%%%%%Gradient of wavelet penaly corresponding to \phi%%%%%%
     
     for ii=0:N/2-1
@@ -315,7 +320,8 @@ mid9为mid7与g的卷积，其表达式为：
          end
    
      end
-    
+</td></tr></table>
+
     %%%%%%Gradient of wavelet penaly corresponding to \theta%%%%%%
     
     for ii=0:N/2-1
