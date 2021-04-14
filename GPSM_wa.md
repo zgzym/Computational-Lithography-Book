@@ -11,6 +11,14 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 
 若所有区域的权重均为1，则为全局小波罚函数。
 
+离散罚函数与小波罚函数的作用在于降低mask版图的复杂性，
+
+但一般是以增加曝光版图误差为代价。
+
+本文采用的小波变换为1级哈尔小波变换，
+
+采用更深一层的哈尔小波变换可以进一步降低mask版图的复杂性，但可能会增加误差。
+
 ## 1. Matlab版代码及说明
 <table><tr><td> function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
 
