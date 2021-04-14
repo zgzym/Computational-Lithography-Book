@@ -12,9 +12,7 @@ GPSM_wa算法在相干照明系统中对N×N的目标版图做广义梯度的相
 若所有区域的权重均为1，则为全局小波罚函数。
 
 ## 1. Matlab版代码及说明
-
 <table><tr><td> function [] = GPSM_wa(N, pz, ra, phase_n, s_phi, s_theta, a, t_r, t_m, gamma_r_D, gamma_a_D, gamma_r_WA, gamma_a_WA, scale, epsilon, maxloop);</td></tr></table>
-
 
 函数一共有16个参数，每个参数的含义如下：
 
@@ -134,7 +132,6 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
  
  振幅表达式如下：
  ![2fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/2.png)
-
 计算mask pattern的实部，虚部和振幅
  
  <table><tr><td>  
@@ -222,21 +219,20 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
 将连续型mask m与冲激响应函数h做卷积：
 
 <table><tr><td>
-    mid1=imfilter(m,h);   %Convolution between continuous mask and low-pass filter
+mid1=imfilter(m,h);   %Convolution between continuous mask and low-pass filter
     
-    mid1mo=abs(mid1);   %卷积后的绝对值，振幅
+mid1mo=abs(mid1);   %卷积后的绝对值，振幅
     
-    mid1r=imfilter(mr,h);   %Convolution between real part of continuous mask amplitude and low-pass filter 
+mid1r=imfilter(mr,h);   %Convolution between real part of continuous mask amplitude and low-pass filter 
+     
+mid1i=imfilter(mi,h);   %Convolution between imaginary part of continuous mask amplitude and low-pass filter
     
-    mid1i=imfilter(mi,h);   %Convolution between imaginary part of continuous mask amplitude and low-pass filter
-    
-    z=1./ (  1+exp(-1*a*(mid1mo)+a*t_r)  ); % sigmoid函数
+z=1./ (  1+exp(-1*a*(mid1mo)+a*t_r)  ); % sigmoid函数
 </td></tr></table>
 
 sigmoid函数表达式如下：
+ ![fig3](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/3.png)
  
-<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/3.png" width="40%" align=center/><br/>
-
 接下来计算cost function的梯度，首先计算几个中间值：
 
 <table><tr><td>
@@ -244,39 +240,34 @@ sigmoid函数表达式如下：
 </td></tr></table>
 
 mid3的表达式为：
-
-<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/4.png" width="40%" align=center/><br/>
+ ![fig4](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/4.png)
 
 其中，mid1r为HmR，即m的实部与h的卷积，1./mid1mo即为T(m)，T(m)表达式为：
- 
-<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/5.png" width="40%" align=center/><br/>
+ ![fig5](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/5.png)
 
 <table><tr><td>
     mid5=imfilter(mid3,g);   
 </td></tr></table>
 
 mid5为mid3与g的卷积，g为h的转置，因此mid5的表达式为：
-
-<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/6.png" width="40%" align=center/><br/>
+![fig6](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/6.png)
 
 <table><tr><td>
     mid7=( pz-z ).*z.*(1-z).*mid1i.*(1./mid1mo);   
 </td></tr></table>
 
 mid7的表达式为：
-
-<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/7.png" width="40%" align=center/><br/>
+![fig7](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/7.png)
 
 <table><tr><td>
     mid9=imfilter(mid7,g);
 </td></tr></table>
 
 mid9为mid7与g的卷积，其表达式为：
+![fig8](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/8.png)
 
-<img src="https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/8.png" width="40%" align=center/><br/>
-
-计算离散罚函数的梯度：
-
+离散罚函数用于降低mask版图的复杂性，将振幅和相位都限制在
+预先设定的几个离散值
 <table><tr><td>
     %%%%%%Gradient of the discretization penalty corresponding to \phi%%%%%%  
     
@@ -293,65 +284,105 @@ mid9为mid7与g的卷积，其表达式为：
         da_D=4.*( sin(2.*ra-pi/2)+1 ).*cos(2.*ra-pi/2);
     
     end
-</td></tr></table>   
+</td></tr></table>
 
-计算小波罚函数的梯度：
+离散罚函数振幅项的梯度为：
+
+![fig9](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/9.png)
+
+对于四相的相移掩膜，其离散罚函数的相位项的梯度为：
+
+![fig10](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/10.png)
+
+对于二相的相移掩膜，其离散罚函数的相位项的梯度为：
+
+![fig11](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/11.png)
+
+计算局域小波罚函数的振幅项的梯度：
 
 <table><tr><td>
-    %%%%%%Gradient of wavelet penaly corresponding to \phi%%%%%%
+%%%%%%Gradient of wavelet penaly corresponding to \phi%%%%%%
     
-    for ii=0:N/2-1
+for ii=0:N/2-1
     
-        for jj=0:N/2-1
+    for jj=0:N/2-1
         
-            dr_WA(ii*2+1,jj*2+1)= scale(ii*2+1,jj*2+1) * (-1)*sin(rr(ii*2+1,jj*2+1))*real( exp((-i)*ra(ii*2+1,jj*2+1)) *( 3*m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - 
+     dr_WA(ii*2+1,jj*2+1)= scale(ii*2+1,jj*2+1) * (-1)*sin(rr(ii*2+1,jj*2+1))*real( exp((-i)*ra(ii*2+1,jj*2+1)) *( 3*m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - 
                                  
-                                   m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
+                           m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
             
-            dr_WA(ii*2+1,jj*2+2)= scale(ii*2+1,jj*2+2) * (-1)*sin(rr(ii*2+1,jj*2+2))*real( exp((-i)*ra(ii*2+1,jj*2+2)) *( 3*m(ii*2+1,jj*2+2) - m(ii*2+1,jj*2+1) -               >                                 
+     dr_WA(ii*2+1,jj*2+2)= scale(ii*2+1,jj*2+2) * (-1)*sin(rr(ii*2+1,jj*2+2))*real( exp((-i)*ra(ii*2+1,jj*2+2)) *( 3*m(ii*2+1,jj*2+2) - m(ii*2+1,jj*2+1) -                                            
                                   m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
             
-            dr_WA(ii*2+2,jj*2+1)= scale(ii*2+2,jj*2+1) * (-1)*sin(rr(ii*2+2,jj*2+1))*real( exp((-i)*ra(ii*2+2,jj*2+1)) *( 3*m(ii*2+2,jj*2+1) - m(ii*2+1,jj*2+1) -               >                                 
+     dr_WA(ii*2+2,jj*2+1)= scale(ii*2+2,jj*2+1) * (-1)*sin(rr(ii*2+2,jj*2+1))*real( exp((-i)*ra(ii*2+2,jj*2+1)) *( 3*m(ii*2+2,jj*2+1) - m(ii*2+1,jj*2+1) -                                  
                                   m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+2) ) );
             
-            dr_WA(ii*2+2,jj*2+2)= scale(ii*2+2,jj*2+2) * (-1)*sin(rr(ii*2+2,jj*2+2))*real( exp((-i)*ra(ii*2+2,jj*2+2)) *( 3*m(ii*2+2,jj*2+2) - m(ii*2+1,jj*2+1) -               >                                  
+     dr_WA(ii*2+2,jj*2+2)= scale(ii*2+2,jj*2+2) * (-1)*sin(rr(ii*2+2,jj*2+2))*real( exp((-i)*ra(ii*2+2,jj*2+2)) *( 3*m(ii*2+2,jj*2+2) - m(ii*2+1,jj*2+1) -                                      
                                   m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+1) ) );
        
-         end
-   
      end
+   
+end
 </td></tr></table>
 
-    %%%%%%Gradient of wavelet penaly corresponding to \theta%%%%%%
-    
-    for ii=0:N/2-1
-       
-         for jj=0:N/2-1
-            
-            da_WA(ii*2+1,jj*2+1)= scale(ii*2+1,jj*2+1) *  (1+cos(rr(ii*2+1,jj*2+1)))*real( (-i)*exp((-i)*ra(ii*2+1,jj*2+1)) *( 3*m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - >
-            
-            m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
-            
-            da_WA(ii*2+1,jj*2+2)= scale(ii*2+1,jj*2+2) *  (1+cos(rr(ii*2+1,jj*2+2)))*real( (-i)*exp((-i)*ra(ii*2+1,jj*2+2)) *( 3*m(ii*2+1,jj*2+2) - m(ii*2+1,jj*2+1) - >
-            
-            m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
-            
-            da_WA(ii*2+2,jj*2+1)= scale(ii*2+2,jj*2+1) *  (1+cos(rr(ii*2+2,jj*2+1)))*real( (-i)*exp((-i)*ra(ii*2+2,jj*2+1)) *( 3*m(ii*2+2,jj*2+1) - m(ii*2+1,jj*2+1) - 
-            
-            m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+2) ) );
-            
-            da_WA(ii*2+2,jj*2+2)= scale(ii*2+2,jj*2+2) *  (1+cos(rr(ii*2+2,jj*2+2)))*real( (-i)*exp((-i)*ra(ii*2+2,jj*2+2)) *( 3*m(ii*2+2,jj*2+2) - m(ii*2+1,jj*2+1) -                                             
-            m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+1) ) );
-            
-        end
-        
-    end
+dr_WA的表达式为：
+ 
+![fig12](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/12.png) 
 
-    %%%%%%Gradient of overall cost function%%%%%% 
-    
-    dr=a*sin(rr).*cos(ra).*mid5 + a*sin(rr).*sin(ra).*mid9 + gamma_r_D*dr_D + gamma_r_WA*dr_WA;
-    
-    da=2*a*0.5*(1+cos(rr)).*sin(ra).*mid5 - 2*a*0.5*(1+cos(rr)).*cos(ra).*mid9 + gamma_a_D*da_D + gamma_a_WA*da_WA;
-    
- end
+计算局域小波罚函数的相位项的梯度：
+
+<table><tr><td>
+%%%%%%Gradient of wavelet penaly corresponding to \theta%%%%%%
+
+for ii=0:N/2-1
+   
+	 for jj=0:N/2-1
+		
+		da_WA(ii*2+1,jj*2+1)= scale(ii*2+1,jj*2+1) *  (1+cos(rr(ii*2+1,jj*2+1)))*real( (-i)*exp((-i)*ra(ii*2+1,jj*2+1)) *( 3*m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - >
+		
+		m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
+		
+		da_WA(ii*2+1,jj*2+2)= scale(ii*2+1,jj*2+2) *  (1+cos(rr(ii*2+1,jj*2+2)))*real( (-i)*exp((-i)*ra(ii*2+1,jj*2+2)) *( 3*m(ii*2+1,jj*2+2) - m(ii*2+1,jj*2+1) - >
+		
+		m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) );
+		
+		da_WA(ii*2+2,jj*2+1)= scale(ii*2+2,jj*2+1) *  (1+cos(rr(ii*2+2,jj*2+1)))*real( (-i)*exp((-i)*ra(ii*2+2,jj*2+1)) *( 3*m(ii*2+2,jj*2+1) - m(ii*2+1,jj*2+1) - 
+		
+		m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+2) ) );
+		
+		da_WA(ii*2+2,jj*2+2)= scale(ii*2+2,jj*2+2) *  (1+cos(rr(ii*2+2,jj*2+2)))*real( (-i)*exp((-i)*ra(ii*2+2,jj*2+2)) *( 3*m(ii*2+2,jj*2+2) - m(ii*2+1,jj*2+1) -                                             
+		m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+1) ) );
+		
+	end
+	
+end
 </td></tr></table>
+
+da_WA的表达式为：
+
+![fig13](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/13.png) 
+
+其中，scale(i,j)为局域罚函数的权重矩阵。
+
+最后，计算整个cost function的梯度：
+
+<table><tr><td>
+%%%%%%Gradient of overall cost function%%%%%% 
+
+dr=a*sin(rr).*cos(ra).*mid5 + a*sin(rr).*sin(ra).*mid9 + gamma_r_D*dr_D + gamma_r_WA*dr_WA;
+
+da=2*a*0.5*(1+cos(rr)).*sin(ra).*mid5 - 2*a*0.5*(1+cos(rr)).*cos(ra).*mid9 + gamma_a_D*da_D + gamma_a_WA*da_WA;
+
+end
+</td></tr></table>
+
+dr的前两项表达式为：
+
+![fig14](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/14.png)
+
+da的前两项表达式为：
+
+![fig15](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/15.png)
+
+
+
