@@ -70,9 +70,11 @@ sum8=100;   %Output pattern error corresponding to the optimized complex-valued 
 </td></tr></table>
 
 以上为基本变量的定义，包括梯度，每次迭代后的误差，迭代次数和输出版图误差
+
 <table><tr><td>
 h = fspecial('gaussian',11, 14);
 </td></tr></table>
+
 h: 振幅冲激响应函数，fspecial('gaussian', hsize, sigma)返回大小为hsize且标准偏差为sigma（正）的旋转对称高斯低通滤波器。
 
 hsize可以是一个向量，指定h中的行数和列数，也可以是一个标量，在这种情况下，h是一个方阵。
@@ -131,7 +133,9 @@ while (sum6>epsilon) & (count<maxloop)  // 当误差大于所设定的误差epsi
 </td></tr></table>
  
  振幅表达式如下：
+ 
  ![2fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/2.png)
+ 
 计算mask pattern的实部，虚部和振幅
  
  <table><tr><td>  
