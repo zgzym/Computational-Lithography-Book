@@ -1,4 +1,4 @@
-# 基于离散罚函数和全变分罚函数的相移掩膜优化算法 （GPSM_wa）
+# 基于离散罚函数和全变分罚函数的相移掩膜优化算法 （GPSM_tv）
 
 ** Generalized Phase-Shift Mask Optimazation Algorithm based on discretization penalty and total variation penalty**
 
