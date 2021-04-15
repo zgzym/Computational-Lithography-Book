@@ -1,6 +1,9 @@
 # 基于离散罚函数和全变分罚函数的相移掩膜优化算法 （GPSM_tv）
 
 ** Generalized Phase-Shift Mask Optimazation Algorithm based on discretization penalty and total variation penalty**
+# 基于离散罚函数和全变分罚函数的相移掩膜优化算法 （GPSM_tv）
+
+** Generalized Phase-Shift Mask Optimazation Algorithm based on discretization penalty and total variation penalty**
 
 ### 本文的matlab代码来源于《Computational Lithography》一书；
 
@@ -29,7 +32,7 @@ f 表示mask版图的复杂度，其计算公式为：
 
 ![16fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/16.png)
 
-f 的每个像素表示mask的强度与desired pattern的L1范数，
+f 的每个像素表示mask的强度与desired pattern的L1范式，
 
 L1范数是指向量中各个元素绝对值之和。
 
@@ -49,7 +52,7 @@ f_up(1:N-1,1:N)=f(2:N,1:N); % 将f整体向上平移一行，第N行元素均为
 
 ![17fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/17.png)
 
-||·||代表L1范数，Qx代表水平方向（向右）一阶导数，
+||·||代表L1范式，Qx代表水平方向（向右）一阶导数，
 
 Qy代表竖直（向上）一阶导数
 
@@ -88,6 +91,11 @@ f3=(f11+f22);
 f3的表达式为：
 
 ![18fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/18.png)
+
+其中, sign函数为：
+
+![23fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/23.png)
+
 
 对于复数域，幅度和相位的全变分罚函数的梯度要分别计算：
 
