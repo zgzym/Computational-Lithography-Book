@@ -1,4 +1,4 @@
-```cpp
+```matlab
 Point global;
 Point foo_bar(Point arg) // 1
 {
