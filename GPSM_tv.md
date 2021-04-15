@@ -29,11 +29,11 @@ f 表示mask版图的复杂度，其计算公式为：
 
 ![16fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/16.png)
 
-f 的每个像素表示mask的强度与desired pattern的L1范式，
+f 的每个像素表示mask的强度与desired pattern的L1范数，
 
 L1范数是指向量中各个元素绝对值之和。
 
-下面计算全变分罚函数*Rtv
+下面计算全变分罚函数*Rtv*
 
 ```matlab
 f_right=zeros(N,N);   %Right shift of f
@@ -45,17 +45,17 @@ f_up=zeros(N,N);   %Up shift of f
 f_up(1:N-1,1:N)=f(2:N,1:N); % 将f整体向上平移一行，第N行元素均为0
 ```
 
-全变分罚函数*Rtv的计算公式为;
+全变分罚函数*Rtv*的计算公式为;
 
 ![17fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/17.png)
 
-||·||代表L1范式，Qx代表水平方向（向右）一阶导数，
+||·||代表L1范数，Qx代表水平方向（向右）一阶导数，
 
 Qy代表竖直（向上）一阶导数
 
 Qxf即为f - f_right，Qyf即为f - f_up.
 
-接下来求*Rtv的梯度：
+接下来求*Rtv*的梯度：
 
 ```matlab
 f1=sign( f-f_right );
