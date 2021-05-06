@@ -92,23 +92,23 @@ maxloop：最大迭代次数
 
 接下来的代码为迭代主循环：
 ```python
-	while (sum6>epsilon) & (count<maxloop)
+	while (sum6>epsilon) & (count<maxloop) % 迭代至误差小于epsilon或者达到最大迭代次数
 	
 		count=count+1; 
 		
 		r=r-s*d;   %Update
 		
-		m=(1+ cos(r))/2;   %Update
+		m=(1+ cos(r))/2;   %Update，连续型mask，这里不存在相位变化
 		
-		viccin=m>t_m;   %Binary mask
+		viccin=m>t_m;   %Binary mask，根据全局阈值t_m离散化的mask
 		
-		viccout=imfilter(viccin,h);
+		viccout=imfilter(viccin,h); % 与冲激响应函数h做卷积，这一步即为成像计算
 		
-		viccbin=viccout>t_r;   %Output pattern of binary mask
+		viccbin=viccout>t_r;   %Output pattern of binary mask，根据sigmoid函数的阈值离散化mask
 		
-		sum6=sum(sum(abs(pz-viccbin)));  
+		sum6=sum(sum(abs(pz-viccbin)));  % 计算误差，这里为一阶范数
 		
-		convergence(count,1)=sum6; 
+		convergence(count,1)=sum6;  % 记录当前循环的误差
 
 		mid1=imfilter(m,h);
 		
@@ -124,7 +124,9 @@ maxloop：最大迭代次数
 
 		%%%%%%Gradient of total variation penaly%%%%%%
 		
-		f=abs(m-pz);
+		% total variation penalty的介绍在文献中93页
+		
+		f=abs(m-pz); % active pattern，即mask与目标版图之间的总差异，表征mask的复杂度
 		
 		f_right=zeros(N,N);   %Right shift of f
 		
@@ -169,14 +171,28 @@ maxloop：最大迭代次数
 
 
 
-f 为激活版图（activation pattern)，
+mid1的计算公式为：
 
-f 表示mask版图的复杂度，其计算公式为：
+![23fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/23.png)
 
-![16fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/16.png)
+z的表达式为如下，去掉exp(jθ)项：
 
+![24fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/24.png)
 
+mid3的表达式为：
 
+![25fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/25.png)
 
+mid5的表达式为：
 
-![22fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/22.png)
+![26fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/26.png)
+
+离散罚函数的梯度公式为：
+
+![27fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/27.png)
+
+全变分罚函数的梯度公式为：
+
+![28fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/28.png)
+
+其中,Qx和Qy分别表示向右和向上的求导
