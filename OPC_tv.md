@@ -1,4 +1,4 @@
-# 基于离散罚函数和全变分罚函数的OPC优化算法 （GPSM_tv）
+# 基于离散罚函数和全变分罚函数的OPC优化算法 （OPC_tv）
 
 **Generalized OPC Optimazation Algorithm based on discretization penalty and total variation penalty**
 
