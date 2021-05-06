@@ -211,3 +211,176 @@ h_total的计算公式为：
 	
 	end	
 ```
+```python
+	f_coe=real(ifft2(ifftshift(f_coe_fft)));
+	
+	f_coe=a_half_d^2*f_coe/(integral);
+```
+
+f_coe的表达式为：
+
+![4fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_4.png)
+
+其中，integral即为：
+
+![5fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_5.png)
+
+a_half_d^2为：
+
+![6fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_6.png)
+
+下面计算相干光源部分的占比：
+```python
+	% 
+	f_coe=f_coe((N+2)/2-midway+1:(N+2)/2+midway-1,(N+2)/2-midway+1:(N+2)/2+midway-1);
+```
+```python
+	h_C=(sqrt(f_coe).*h_total);   %Equivalent coherent component
+	
+	h_I=(sqrt(1-f_coe)).*h_total;   %Equivalent incoherent component
+```
+其中，h_C为等价幅度冲激响应函数的相干分量，h_I为非相干分量，其表达式为：
+
+![7fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_7.png)
+
+将幅度冲激响应矩阵向量化：
+```python
+	for ii=1:N_filter
+		
+		for jj=1:N_filter
+			
+			h_C_vector((ii-1)*N_filter+jj)=h_C(ii,jj);
+			
+			h_I_vector((ii-1)*N_filter+jj)=h_I(ii,jj);
+		
+		end
+	
+	end
+	
+	for ii=1:N_filter   %h的转置，g_I为h_I的转置的平方
+		
+		for jj=1:N_filter
+			
+			g_C(ii,jj)=h_C_vector((N_filter-ii)*N_filter+(N_filter+1-jj)); %inverse vector
+			
+			g_I(ii,jj)=abs(h_I_vector((N_filter-ii)*N_filter+(N_filter+1-jj)))^2; %inverse vector  have squre!!!!!!!!!
+		
+		end
+	
+	end
+```
+
+初始化相位和mask：
+
+```python
+	%%%%%%The initialization of \theta, where r=\theta%%%%%%
+	r=pi*4/5*(pz==0) + pi/5*(pz==1);
+	 
+	%%%%%%OPC optimization in partially coherent imaging system%%%%%%
+	m=zeros(N,N);   %Mask pattern
+```
+
+下面是主循环：
+```python
+	while (sum8>epsilon) & (count<maxloop)
+	
+	   count=count+1; 
+	   
+	   r=r-step*d;   %Update
+	   
+	   %%%%%%Calculate pattern error%%%%%%
+	   
+	   m=(1+cos(r))/2;   %Grey mask
+	   
+	   m_binary=m>t_m;   %Binary mask，用于计算离散化的输出版图
+	   
+	   aerial=zeros(N,N);   %Aerial image 
+	   
+	   aerial=(abs(imfilter(double(m_binary),h_C)).^2 + imfilter(double(m_binary).^2,abs(h_I).^2));
+```
+aerial的表达式为：
+
+![8fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_8.png)
+
+```python	   
+	   z_binary=aerial>tr_approx;   %Binary output pattern
+	   
+	   sum8=sum(sum(abs(abs(pz)-z_binary)));
+	   
+	   convergence(count,1)=sum8;
+
+	   %%%%%%Gradient of cost function%%%%%%
+	   
+	   % double()用于转换数据精度 
+	   
+	   mid1=(abs(imfilter(double(m),h_C)).^2 + imfilter(double(m).^2,abs(h_I).^2));
+	   
+	   z=1./ (1+exp(-a*mid1+a*tr_approx));  
+```
+z的表达式为：
+
+![9fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_9.png)
+
+```python	   
+	   mid3=(pz-z).*z.*(1-z);   
+	   
+	   mid4=mid3.*imfilter(double(m),h_C);
+```
+
+mid4的表达式为：
+
+![10fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_10.png)
+
+```python	   
+	   mid4_5=mid3.*imfilter(double(m),conj(h_C));
+	   
+	   mid5=0.5*(imfilter(double(mid4),conj(g_C))+imfilter(double(mid4_5),g_C));
+```
+mi5的表达式为：
+
+![11fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_11.png)
+
+```python	   
+	   mid7=mid3.*double(m);
+	   
+	   mid8=imfilter(double(mid7),g_I);
+```
+
+mid8的表达式为：
+
+![12fd](https://github.com/zgzym/Computational-Lithography-Book/blob/main/images/OPC_acaa_12.png)
+
+计算离散罚函数和小波罚函数的梯度：
+
+```python	   
+	   %%%%%%Gradient of discretization penaly%%%%%%  
+	   
+	   d_D=((-8)*m+4)*(-0.5).*sin(r);
+	   
+	   %%%%%%Gradient of wavelet penaly%%%%%%
+	   
+	   for ii=0:(N/2-1)
+		
+		for jj=0:(N/2-1)
+
+			   d_WA(ii*2+1,jj*2+1)= ( 3*m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) * (-0.5)*sin(r(ii*2+1,jj*2+1));
+
+			   d_WA(ii*2+1,jj*2+2)= ( 3*m(ii*2+1,jj*2+2) - m(ii*2+1,jj*2+1) - m(ii*2+2,jj*2+1) - m(ii*2+2,jj*2+2) ) * (-0.5)*sin(r(ii*2+1,jj*2+2));
+
+			   d_WA(ii*2+2,jj*2+1)= ( 3*m(ii*2+2,jj*2+1) - m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+2) ) * (-0.5)*sin(r(ii*2+2,jj*2+1));
+
+			   d_WA(ii*2+2,jj*2+2)= ( 3*m(ii*2+2,jj*2+2) - m(ii*2+1,jj*2+1) - m(ii*2+1,jj*2+2) - m(ii*2+2,jj*2+1) ) * (-0.5)*sin(r(ii*2+2,jj*2+2));
+
+		   end
+
+	   end
+```
+
+最后计算总的cost function的梯度:
+```python	   
+	   %%%%%%Gradient of overall cost function%%%%%%
+
+	   d=2*a*mid5.*sin(r)+2*a*mid8.*sin(r)+gamma_D*d_D +gamma_WA*d_WA;
+
+	end
+```
